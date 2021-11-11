@@ -53,5 +53,6 @@ ggplot(snp, aes(x = accrk, y = percpop, color = as.factor(snp), alpha = 0.5)) +
   theme_classic() +
   labs(color="SNP") +
   geom_smooth(data = snp, aes(x = accrk, y = percpop), se = FALSE, inherit.aes = FALSE, method = "loess", color = "steelblue", span = 1)
+ggsave("snp_fit_scatter.png")
 ```
 
