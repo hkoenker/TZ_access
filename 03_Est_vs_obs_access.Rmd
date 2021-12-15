@@ -16,8 +16,9 @@ The figure below plots modeled (estimated) ITN access at council level based on 
 
 Notes
 
-- dots represent councils
+- dots represent councils; vertical groups are regions (with the same value of ITN access in the survey)
 - 2021 Global Fund councils demonstrate the disparities between council estimates and regional averages due to the 2020 mass replacement campaign being implemented in only some councils within each region
+- (2021 data exclude ANC/IVD ITNs in GF regions as we don’t have those data yet, but it shouldn’t make a big difference)
 - In 2019 GF councils, modeled ITN access is less than SMPS access, potentially due to acquisition of ITNs and nets in the informal or retail sector
 - where dots are above the equality line, we have perhaps underestimated net median lifespan...
 - no strong relationship between the two estimates...
