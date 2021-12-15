@@ -1,0 +1,75 @@
+---
+title: "Population ITN access in Tanzania"
+author: "Hannah Koenker, USAID TVCA"
+date: "12/15/2021"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+editor_options:
+  chunk_output_type: console
+---
+
+# How do estimates of ITN access from modeled data compare with household survey data at regional level?
+
+The figure below plots modeled (estimated) ITN access at council level based on ITN inputs and decay function against ITN access at regional level from household surveys. In 2017 the data source is the 2017 MIS; 2019 is the School Malaria Parasitemia Survey; 2021 is the TVCA Mobile Phone Survey. Note that the MIS, mobile phone surveys, and SMPS all provide estimates of ITN access at the regional level, not the council level. The diagonal line illustrates where the two estimates should be equal.
+
+Notes
+
+- dots represent councils
+- 2021 Global Fund councils demonstrate the disparities between council estimates and regional averages due to the 2020 mass replacement campaign being implemented in only some councils within each region
+- In 2019 GF councils, modeled ITN access is less than SMPS access, potentially due to acquisition of ITNs and nets in the informal or retail sector
+- where dots are above the equality line, we have perhaps underestimated net median lifespan...
+- no strong relationship between the two estimates...
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(haven)
+library(janitor)
+library(ggthemes)
+library(cowplot)
+library(flextable)
+library(gt)
+library(labelled)
+library(ggpubr)
+theme_set(theme_light())
+```
+
+
+```{r}
+df <- read_dta("tz__accrk_total_znz_tnvs_strat_mrc_snp_rch_pop_2012_2030.dta") %>% 
+  mutate(outlier = ifelse(council %in% c("Kondoa TC", "Mbulu TC", "Manyoni DC", "Manyoni TC", "Itigi DC", "Songwe DC", "Mlele DC", "Mpimbwe DC", "Mtama DC", "Bunda TC", "Tarime TC", "Tarime DC", "Buchosa DC", "Sengerema DC", "Bagamoyo DC", "Chalinze DC", "Rufiji DC", "Kibiti DC", "Nzega TC"), 1, 0)) %>%
+  mutate(donor = factor(donor, labels = c("PMI","Global Fund")))
+```
+
+```{r compareplot, warning=FALSE, message = FALSE}
+
+df %>%
+  filter(year == 2017 | year == 2019 | year == 2021) %>%
+  filter(outlier == 0) %>%
+  # mutate(donor = as.factor(donor)) %>%
+  ggplot(aes(x = access2,
+             y = accrk)) +
+  geom_point(fill = "turquoise", pch = 21, alpha = 0.3) +
+  geom_smooth(alpha = .3) +
+  geom_line(aes(x = accrk,
+                y = accrk), alpha = .2) +
+  scale_fill_discrete(guide = "none") +
+  stat_cor(method = "pearson") + # Pearson is for linear relationship; Spearman works with monotonic relationships/ranked order as well
+  facet_grid(year ~ donor, labeller = label_value) + #label_value is the default, will take from factors.
+  labs(x = "ITN access from surveys",
+       y = "Estimated ITN access from model")
+ggsave("est_v_survey_access.png")
+```
+
+```{r cleanup, echo=FALSE}
+# setHook(
+#   "rmarkdown.onKnitCompleted",
+#   function(){
+#     unlink("figs", recursive = TRUE)
+#     unlink("04_Quant_Plots_cache", recursive = TRUE)
+#     unlink("04_Quant_Plots_files", recursive = TRUE)
+#   }
+# )
+```

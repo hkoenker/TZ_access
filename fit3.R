@@ -12,7 +12,7 @@ B <- as.data.frame(A)
 pdf(
   "Access_NPC.pdf",
   height = 6,
-  width = 8,
+  width = 6,
   )
 with(B,
      plot(
