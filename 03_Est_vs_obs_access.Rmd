@@ -39,7 +39,7 @@ theme_set(theme_light())
 
 
 ```{r}
-df <- read_dta("tz__accrk_total_znz_tnvs_strat_mrc_snp_rch_pop_2012_2030.dta") %>% 
+df <- read_dta("~/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/output/tz__accrk_total_znz_tnvs_strat_mrc_snp_rch_pop_2012_2030.dta") %>% 
   mutate(outlier = ifelse(council %in% c("Kondoa TC", "Mbulu TC", "Manyoni DC", "Manyoni TC", "Itigi DC", "Songwe DC", "Mlele DC", "Mpimbwe DC", "Mtama DC", "Bunda TC", "Tarime TC", "Tarime DC", "Buchosa DC", "Sengerema DC", "Bagamoyo DC", "Chalinze DC", "Rufiji DC", "Kibiti DC", "Nzega TC"), 1, 0)) %>%
   mutate(donor = factor(donor, labels = c("PMI","Global Fund")))
 ```
@@ -53,7 +53,7 @@ df %>%
   ggplot(aes(x = access2,
              y = accrk)) +
   geom_point(fill = "turquoise", pch = 21, alpha = 0.3) +
-  geom_smooth(alpha = .3) +
+  geom_smooth(method = "lm", alpha = .3) +
   geom_line(aes(x = accrk,
                 y = accrk), alpha = .2) +
   scale_fill_discrete(guide = "none") +
