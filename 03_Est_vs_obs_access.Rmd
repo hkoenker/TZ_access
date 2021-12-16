@@ -42,6 +42,11 @@ theme_set(theme_light())
 df <- read_dta("~/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/output/tz__accrk_total_znz_tnvs_strat_mrc_snp_rch_pop_2012_2030.dta") %>% 
   mutate(outlier = ifelse(council %in% c("Kondoa TC", "Mbulu TC", "Manyoni DC", "Manyoni TC", "Itigi DC", "Songwe DC", "Mlele DC", "Mpimbwe DC", "Mtama DC", "Bunda TC", "Tarime TC", "Tarime DC", "Buchosa DC", "Sengerema DC", "Bagamoyo DC", "Chalinze DC", "Rufiji DC", "Kibiti DC", "Nzega TC"), 1, 0)) %>%
   mutate(donor = factor(donor, labels = c("PMI","Global Fund")))
+
+dfr <- read_dta("~/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/output/tz_region_crop_npc_acc.dta") %>% 
+  mutate(donor = factor(donor, labels = c("PMI","Global Fund"))) %>% 
+  select(region, donor, year, accrk, access2, time)
+
 ```
 
 ```{r compareplot, warning=FALSE, message = FALSE}
@@ -64,6 +69,25 @@ df %>%
 ggsave("est_v_survey_access.png")
 ```
 
+```{r}
+dfr %>%
+  filter(year == 2017 | year == 2019 | year == 2021) %>%
+  ggplot() +
+  geom_point(aes(x = year,
+             y = accrk), fill = "orange", pch = 21, alpha = 0.3) +
+  geom_point(aes(x = time,
+             y = access2), fill = "green", pch = 21, alpha = 0.3) +
+  #geom_smooth(method = "lm", alpha = .3) +
+  geom_line(aes(x = accrk,
+                y = accrk), alpha = .2) +
+  scale_fill_discrete(guide = "none") +
+  #stat_cor(method = "pearson") + # Pearson is for linear relationship; Spearman works with monotonic relationships/ranked order as well
+  facet_grid(year ~ donor, labeller = label_value) + #label_value is the default, will take from factors.
+  labs(x = "ITN access from surveys",
+       y = "Estimated ITN access from model")
+ggsave("est_v_survey_access.png")
+```
+
 ```{r cleanup, echo=FALSE}
 # setHook(
 #   "rmarkdown.onKnitCompleted",
@@ -73,4 +97,13 @@ ggsave("est_v_survey_access.png")
 #     unlink("04_Quant_Plots_files", recursive = TRUE)
 #   }
 # )
+```
+
+```{r}
+
+# got out of sync somehow with the web version, needed to reupload/replace all the web files with my local files:
+
+# git push --set-upstream origin master --force 
+
+# but didn't work for TZ access project.
 ```
