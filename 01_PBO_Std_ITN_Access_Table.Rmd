@@ -1,0 +1,140 @@
+---
+title: "Population ITN access in Tanzania"
+author: "Hannah Koenker, USAID TVCA"
+date: "12/13/2021"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+editor_options:
+  chunk_output_type: console
+---
+
+The table below presents estimates of population access to ITNs in 14 PMI-supported regions of mainland Tanzania. Data sources and the timing of data collection are indicated in the column headers. Note that the MIS, mobile phone surveys, and SMPS all provide estimates of ITN access at the regional level, not the council level. Council-level estimates of ITN access for 2021 are provided in the final column of the table. The year in which PBO nets were first issued in school net programme (SNP) is also provided. 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(haven)
+library(janitor)
+library(ggthemes)
+library(cowplot)
+library(flextable)
+library(gt)
+theme_set(theme_light())
+```
+
+```{r read, message = FALSE, warning = FALSE}
+tzac2 <- read_dta("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/output/tz__accrk_total_znz_tnvs_strat_mrc_snp_rch_pop_2012_2030.dta") %>% 
+  clean_names() %>% 
+  select(zone, donor, council, year, region, strat, accrk, access2) %>% 
+  filter(!is.na(access2),
+         year>2016) %>% 
+  # fix Tarime DC double record issue before pivoting:
+  filter(!(council == "Tarime DC" & accrk<17)) %>% 
+  pivot_wider(names_from = year, values_from = c(accrk, access2)) %>% 
+  select(-accrk_2017, -accrk_2018, -accrk_2019) %>% 
+  rename(mis2017 = access2_2017,
+         rdd2018 = access2_2018,
+         smps2019 = access2_2019,
+         rdd2021 = access2_2021) %>% 
+  mutate(region = case_when(
+    region == "KaskaziniPemba" ~ "Kaskazini Pemba",
+    region == "KaskaziniUnguja" ~ "Kaskazini Unguja",
+    region == "KusiniPemba" ~ "Kusini Pemba",
+    region == "KusiniUnguja" ~ "Kusini Unguja",
+    region == "MjiniMagharibi" ~ "Mjini Magharibi",
+    TRUE ~ region)) %>% 
+  mutate(donor = ifelse(zone==2, 3, donor)) %>% 
+  arrange(donor, region, council) %>% 
+  select(-accrk_2021, accrk_2021) %>%  # move it to the end 
+mutate(pbo = case_when(
+  region == "Geita" ~ "2019",
+  region == "Kigoma" ~ "2019",
+  region == "Kagera" ~ "2019",
+  region == "Mwanza" ~ "2019",
+  region == "Mara" ~ "2020",
+  region == "Lindi" ~ "2021",
+  region == "Mtwara" ~ "2021",
+  region == "Ruvuma" ~ "2021",
+  region == "Morogoro" ~ "2021",
+  region == "Pwani" ~ "2021",
+  region == "Shinyanga" ~ "2021",
+  region == "Simiyu" ~ "2021",
+  region == "Katavi" ~ "2021",
+  region == "Tabora" ~ "2021",
+  region == "Tanga" ~ "2022",
+  region == "Rukwa" ~ "2022",
+  region == "Mbeya" ~ "2022",
+  region == "Songwe" ~ "2022",
+))
+```
+
+```{r}
+Table1 <- as.data.frame(tzac2) %>%
+  filter(donor == 1) %>%
+  select(-donor,-strat,-zone) %>%
+  mutate(mis2017 = as.numeric(mis2017),
+         accrk_2021 = as.numeric(unlist(accrk_2021))) %>%
+  arrange(pbo, region, council) %>%
+  relocate(pbo, .after = region) %>%
+  mutate(mis2017 = round(mis2017, 1),
+         accrk_2021 = round(accrk_2021, 1))
+
+```
+
+``` {r gt}
+#   T1 <- gt(Table1) %>% 
+#     cols_label(
+#     council = md("Council"),
+#     region = md("Region"),
+#     mis2017 = md("2017 MIS \n[Oct-Dec]"),
+#     rdd2018 = md("2018 Mobile Phone Survey [Apr]"),
+#     smps2019 = md("2019 School Malaria Parasitemia Survey [Sept]"),
+#     rdd2021 = md("2021 Mobile Phone Survey [Jan-Mar]"),
+#     accrk_2021 = md("Projected Access end 2021"),
+#     pbo = md("Start year for PBO in SNP")
+#   ) %>% 
+#     fmt_number(columns = where(is.numeric),
+#                decimals = 1
+#                ) %>% 
+#     cols_move(
+#     columns = pbo,
+#     after = region
+#   ) %>% 
+#      cols_width(
+#     council ~ px(150),
+#     region ~ px(100),
+#     everything() ~ px(100)
+#   ) %>% 
+#     tab_options(table.font.size = 10)
+# T1
+```
+
+```{r flextable}
+set_flextable_defaults(fonts_ignore = TRUE)
+T1f <- flextable(Table1)
+T1f <- set_header_labels(
+  T1f,
+  council = "Council",
+  region = "Region",
+  mis2017 = "2017 MIS [Oct-Dec]",
+  rdd2018 = "2018 Mobile Phone Survey [Apr]",
+  smps2019 = "2019 School Malaria Parasitemia Survey [Sept]",
+  rdd2021 = "2021 Mobile Phone Survey [Jan-Mar]",
+  accrk_2021 = "Projected Access end 2021",
+  pbo = "Start year for PBO in SNP"
+) 
+T1f <- autofit(T1f, add_w = 0, add_h = 0)
+T1f <- width(T1f, width = dim(T1f)$widths*7 /(flextable_dim(T1f)$widths))
+T1f <- fontsize(T1f, size=9)
+t1f <- fontsize(T1f, size=10, part = "header")
+T1f <- theme_zebra(
+  T1f,
+  odd_header = "#CFCFCF",
+  odd_body = "#EFEFEF",
+  even_header = "transparent",
+  even_body = "transparent"
+)
+T1f
+```
+
