@@ -1,0 +1,177 @@
+---
+title: "PBO net crop"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  bookdown::html_document2
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(haven)
+library(tmap)
+library(sf)
+# library(janitor)
+# library(ggthemes)
+# library(cowplot)
+# library(flextable)
+# library(gt)
+# library(labelled)
+# library(ggpubr)
+theme_set(theme_minimal())
+```
+
+
+
+```{r read, echo=FALSE}
+df <- read_dta("/Users/hannahkoenker/Dropbox/RMEL/Objective 4/Council Level ITN access data/council_itns_access_database.dta") %>% 
+  mutate(plabel=replace(pctpbo, pctpbo==0, "")) # turns out I'm not labeling the PBO bars with the %, so this is not needed
+
+tzregions <- c("Dodoma", "Arusha", "Kilimanjaro", "Tanga", "Morogoro", "Pwani", "Dar", "Lindi", "Mtwara", "Ruvuma", "Iringa", "Mbeya", "Singida", "Tabora", "Rukwa", "Kigoma", "Shinyanga", "Kagera", "Mwanza", "Mara", "Manyara", "Njombe", "Katavi", "Simiyu", "Geita", "Songwe", "KaskaziniUnguja", "KusiniUnguja", "MjiniMagharibi", "KaskaziniPemba", "KusiniPemba")
+```
+
+# Estimating the share of nets that are PBO
+
+By applying the net decay function separately to the crops of standard and PBO nets, we can calculate the total crop of PBO nets, the total crop of standard nets, and then the proportion of the total crop that are PBO nets. PBO nets have been issued in four mainland regions since 2019, with five regions issuing PBO nets starting in 2021. Zanzibar's 2020-2021 MRC likewise issued PBO nets.
+
+In 2019, Kagera, Kigoma, Geita, and Mwanza regions began distributing PBO ITNs through SNP and RCH channels. 
+
+The estimated share of the overall net crop that are PBO is shown below, illustrated by Kagera region, and grows over time from around 25% of the total crop in 2019 to 50% in 2020 to 70% in 2021, as standard ITNs wear out. 
+
+
+```{r testone, echo=FALSE, include=FALSE, }
+df %>% 
+    filter(region=="Kagera", year<2022) %>% 
+    ggplot(aes(x=years, y=croptot)) +
+    geom_col(aes(year, croptot),  fill="lightblue") +
+    geom_col(aes(year, croppbo, fill="PBO")) +
+  facet_wrap(facets=~council) +
+  labs(x="",
+       y="# of ITNs in the crop",
+       title="Kagera") +
+  scale_y_continuous(labels = scales::label_number_si()) +
+  # scale_fill_manual(name = "", values = c("Std ITN" = "lightblue")) + # can't use two scale_fill_manuals...can't get two legends in here. 
+  scale_fill_manual(name = "", values = c("PBO" = "darkblue")) 
+```
+
+```{r fun_plot, echo=FALSE}
+ggcrop <- function(reg) {
+  df %>% 
+    filter(region==reg, year<2022) %>% 
+    ggplot(aes(x=years, y=croptot)) +
+    geom_col(aes(year, croptot),  fill="lightblue") +
+    geom_col(aes(year, croppbo, fill="PBO")) +
+  facet_wrap(facets=~council) +
+  labs(x="",
+       y="# of ITNs in the crop",
+       title=reg) +
+  scale_y_continuous(labels = scales::label_number_si()) +
+  # scale_fill_manual(name = "", values = c("Std ITN" = "lightblue")) + # can't use two scale_fill_manuals...can't get two legends in here. 
+  scale_fill_manual(name = "", values = c("PBO" = "darkblue")) 
+}
+```
+
+```{r kagera, echo=FALSE, fig.cap="Share of net crop that are PBO, Kagera Region", fig.topcaption = TRUE}
+ggcrop("Kagera")
+```
+
+In Katavi, PBO nets were delivered in the December 2021 targeted replacement campaign (TRC), bringing the total share of PBO nets in households to a little over 50%. 
+
+```{r katavi, echo=FALSE, fig.cap="Share of net crop that are PBO, Katavi Region", fig.topcaption = TRUE}
+ggcrop("Katavi")
+```
+
+In Lindi, Mtwara, Ruvuma, and Mara, PBO nets were distributed in the 2021 SNP, currently representing around 20% of the total net crop in these regions, illustrated by Lindi.
+
+```{r lindi, echo=FALSE, fig.cap="Share of net crop that are PBO, Lindi Region", fig.topcaption = TRUE}
+ggcrop("Lindi")
+```
+
+Finally in Zanzibar, the 2021 MRC delivered PBO nets, forming roughly two-thirds of the total net crop, as illustrated by Kusini Pemba. 
+
+```{r mjini, echo=FALSE, fig.cap="Share of net crop that are PBO, Kusini Pemba", fig.topcaption = TRUE}
+ggcrop("KusiniPemba")
+```
+
+# Share of nets that are PBO by region
+
+The map below indicates the total share of nets that are PBO for each region, as of end of 2021:
+
+```{r}
+
+##--bring in shape files
+TZ_regions <- st_read(dsn ="/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/AllSHP/tza_admbnda_adm1_20181019/tza_admbnda_adm1_20181019.shp")
+ 
+Africa_bodies <- st_read(dsn ="/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/AllSHP/africa_bodies/waterbodies_africa.shp")
+TZ_bodies <- st_crop(Africa_bodies, raster::extent(TZ_regions))
+ 
+##--regional-level summary
+colnames(df)
+NetVolume_Region <- df %>%
+  filter(year==2021) %>%
+  group_by(region) %>%
+  summarise_at(vars(c(croppbo,croptot)), sum, na.rm = TRUE)
+ 
+##--calculate PBO share of net totals
+NetVolume_Region$pbo_pct <- NA
+NetVolume_Region$pbo_pct <- round((NetVolume_Region$croppbo/NetVolume_Region$croptot)*100,1)
+ 
+##--align region names and merge pbo_pct into regional shape file
+unique(NetVolume_Region$region)
+NetVolume_Region$region <- ifelse(NetVolume_Region$region=="Dar","Dar-es-salaam",NetVolume_Region$region)
+NetVolume_Region$region <- ifelse(NetVolume_Region$region=="KaskaziniPemba","Kaskazini Pemba",NetVolume_Region$region)
+NetVolume_Region$region <- ifelse(NetVolume_Region$region=="KaskaziniUnguja","Kaskazini Unguja",NetVolume_Region$region)
+NetVolume_Region$region <- ifelse(NetVolume_Region$region=="KusiniPemba","Kusini Pemba",NetVolume_Region$region)
+NetVolume_Region$region <- ifelse(NetVolume_Region$region=="KusiniUnguja","Kusini Unguja",NetVolume_Region$region)
+NetVolume_Region$region <- ifelse(NetVolume_Region$region=="MjiniMagharibi","Mjini Magharibi",NetVolume_Region$region)
+ 
+TZ_regions <- merge(TZ_regions, NetVolume_Region[ , c("region", "pbo_pct")], by.x="ADM1_EN", by.y="region", all.x=T)
+ 
+map <- tm_shape(subset(TZ_regions)) +
+  tm_borders() +
+  # tm_shape(TZ_bodies) +
+  tm_fill(col="lightblue") +
+  tm_shape(subset(TZ_regions)) +
+  tm_fill("pbo_pct",
+          title="PBO share (%)",
+          # style="cat", #can swap this with the line below if you want
+          breaks = seq(0, 100, by=10),
+          palette = "-magma") +
+  tm_shape(subset(TZ_regions)) +
+  tm_borders(col = "black",
+             lwd = 2,
+             lty = "solid",
+             alpha = NA) +
+  tm_layout(legend.title.size=1.25,
+            legend.text.size=1.0) +
+  tm_layout("Percent PBO Net Crop Share (2021)",
+            title.size = 1.0,
+            title.position = c("RIGHT","TOP")) +
+  tmap_options(check.and.fix = TRUE)
+
+print(map)
+
+tmap_save(tm = map, filename = "pctpbo2021.png", width = 12.8, height = 9.4, units = "in", asp=0)
+ 
+
+```
+
+```{r pbocroploop, echo=FALSE, include=FALSE}
+# for (c in tzregions) {
+# f <-  df %>% 
+#     filter(region==c, year<2022) %>% 
+#     ggplot() +
+#     geom_col(aes(year, croptot), fill="lightblue") +
+#     geom_col(aes(year, croppbo), fill="darkblue") +
+#   facet_wrap(facets=~council) +
+#   labs(x="",
+#        y="# of ITNs in the crop",
+#        title=c) +
+#   scale_y_continuous(labels = scales::label_number_si())
+# 
+# print(f)    
+# }
+```
+
