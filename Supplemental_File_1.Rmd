@@ -1,0 +1,250 @@
+---
+title: "Estimating population ITN access at council level in Tanzania: Supplemental File 1"
+author: "Hannah Koenker, Tropical Health LLP"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: word_document
+  # beamer_presentation:
+  #   keep_md: true
+  #   keep_tex: true
+  #   latex_engine: pdflatex
+  #   ##theme: metropolis
+header-includes:
+  - \usetheme[numbering=fraction]{metropolis}
+  - \definecolor{thorange}{rgb}{.8627451, .34509804, .16470588}
+  - \setbeamercolor{frametitle}{bg=thorange}
+  - \setbeamercolor{progress bar in section page}{fg=thorange}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+```
+
+
+# Global Fund Regions
+
+
+## Arusha
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Arusha.png")
+```
+
+
+## Dar es Salaam
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Dar.png")
+```
+
+
+## Dodoma
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Dodoma.png")
+```
+
+
+## Iringa
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Iringa.png")
+```
+
+
+## Kilimanjaro
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Kilimanjaro.png")
+```
+
+
+## Manyara
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Manyara.png")
+```
+
+
+## Mbeya
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Mbeya.png")
+```
+
+
+## Njombe
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Njombe.png")
+```
+
+
+## Rukwa
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Rukwa.png")
+```
+
+
+## Singida
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Singida.png")
+```
+
+
+## Songwe
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Songwe.png")
+```
+
+
+## Tanga
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Tanga.png")
+```
+
+
+
+# PMI Regions
+
+
+## Geita
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Geita.png")
+```
+
+
+## Kagera
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Kagera.png")
+```
+
+
+## Katavi
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Katavi.png")
+```
+
+
+## Kigoma
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Kigoma.png")
+```
+
+
+## Lindi
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Lindi.png")
+```
+
+
+## Mara
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Mara.png")
+```
+
+
+## Morogoro
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Morogoro.png")
+```
+
+
+## Mtwara
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Mtwara.png")
+```
+
+
+## Mwanza
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Mwanza.png")
+```
+
+
+## Pwani
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Pwani.png")
+```
+
+
+## Ruvuma
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Ruvuma.png")
+```
+
+
+## Shinyanga
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Shinyanga.png")
+```
+
+
+## Simiyu
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Simiyu.png")
+```
+
+
+## Tabora
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Tabora.png")
+```
+
+# Zanzibar
+
+
+
+## Mjini Magharibi
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_MjiniMagharibi.png")
+```
+
+
+## Kaskazini Unguja
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_KaskaziniUnguja.png")
+```
+
+
+## Kusini Unguja
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_KusiniUnguja.png")
+```
+
+
+## Kaskazini Pemba
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_KaskaziniPemba.png")
+```
+
+
+## Kusini Pemba
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_KusiniPemba.png")
+```
+
+

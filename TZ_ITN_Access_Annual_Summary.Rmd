@@ -1,0 +1,378 @@
+---
+title: "Tanzania Council-level ITNs issued as percent of council population and annual ITN access estimates"
+author: "Hannah Koenker, Tropical Health LLP"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  beamer_presentation:
+    keep_md: true
+    keep_tex: true
+    latex_engine: pdflatex
+    ##theme: metropolis
+header-includes:
+  - \usetheme[numbering=fraction]{metropolis}
+  - \definecolor{thorange}{rgb}{.8627451, .34509804, .16470588}
+  - \setbeamercolor{frametitle}{bg=thorange}
+  - \setbeamercolor{progress bar in section page}{fg=thorange}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+```
+
+# Background
+
+## Background (1)
+
+- NBS population projections per council from 2012-2030
+- Population for 2004-2011 projected backwards from 2012 census using an average growth rate for the council
+- ITN issuing data from 2004 to present, including TNVS, MRC 2015, MRC 2020, SNP, RCH distributions, and Katavi MRC 2021
+- U5CC (2007-8) and UCC (2010-11) are included - regional ITNs issued were allocated to councils proportionally based on population
+- No retail sales of nets included
+- Graphs show yearly total ITNs issued in the council, divided by the council's projected population for that year 
+- This is termed "Nets issued as percent of population"
+
+
+
+## Background (2)
+
+- The number of nets in a council each year is estimated using an annualized stock and flow model, with a 2.15 year median lifespan as a decay rate. Survey data from Tanzania was fitted to national ITN deliveries to calculate this decay rate specifically for Tanzania (Bertozzi-Villa et al, 2021)
+- This 'net crop' is transformed into population ITN access using a transformation from nets per capita into access using quantile regression of data from >100 DHS/MIS/MICS surveys
+- Observed ITN access from Tanzania surveys (MIS, DHS, SMPS, and mobile phone surveys) are plotted as points for comparison against predicted ITN access
+
+
+
+## Background (3)
+
+- Confidence intervals around ITN access are the quartiles (50% confidence intervals) from the above dataset
+- These confidence intervals account for the 95% confidence interval in median net lifespan from Bertozzi-Villa et al 2021 (1.88 - 2.43 years)
+- Uncertainty of ITN access due to uncertainty of population estimates is not shown, but should be considered in interpretation
+
+
+
+## Caveats!
+
+- Councils formed within the analysis period or renamed councils may have incomplete data or outlier values (n=19; see Bagamoyo DC as an example)
+- Inaccuracies in the population projections will lead to inaccuracies in the nets per population and net crop results
+- Purchases of nets are not reflected in the net crop and ITN access estimates but can substantially contribute to net access in some surveys
+- 2022 data on nets issued is only reflective of SNP plans - not RCH or other distributions
+
+# Maps
+
+## Estimated ITN Access end of 2020 - mainland
+
+```{r, out.width = "200px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/2020_acc.png")
+```
+
+
+## Estimated ITN Access end of 2021 - mainland
+
+```{r, out.width = "200px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/2021_acc.png")
+```
+
+## Estimated ITN Access end of 2022 - mainland
+
+```{r, out.width = "200px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/2022_acc.png")
+```
+
+## Estimated ITN Access end of 2020 - Zanzibar
+
+```{r, out.width = "100px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/2020_znz_acc.png")
+```
+
+
+## Estimated ITN Access end of 2021 - Zanzibar
+
+```{r, out.width = "100px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/2021_znz_acc.png")
+```
+
+## Estimated ITN Access end of 2022 - Zanzibar
+
+```{r, out.width = "100px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/2022_znz_acc.png")
+```
+
+# Global Fund Regions
+
+## Global Fund Regions
+
+- Graphs indicate 'spikes' in years where UCC and MRC were implemented
+- Between campaigns, only RCH nets are captured
+
+
+## Arusha
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Arusha.png")
+```
+
+
+## Dar es Salaam
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Dar.png")
+```
+
+
+## Dodoma
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Dodoma.png")
+```
+
+
+## Iringa
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Iringa.png")
+```
+
+
+## Kilimanjaro
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Kilimanjaro.png")
+```
+
+
+## Manyara
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Manyara.png")
+```
+
+
+## Mbeya
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Mbeya.png")
+```
+
+
+## Njombe
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Njombe.png")
+```
+
+
+## Rukwa
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Rukwa.png")
+```
+
+
+## Singida
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Singida.png")
+```
+
+
+## Songwe
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Songwe.png")
+```
+
+
+## Tanga
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Tanga.png")
+```
+
+
+
+# PMI Regions
+
+## PMI Regions
+
+- Graphs indicate spikes in years where 2015 MRC were implemented
+- Other years indicate SNP and RCH 
+
+
+
+## Geita
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Geita.png")
+```
+
+
+## Kagera
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Kagera.png")
+```
+
+
+## Katavi
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Katavi.png")
+```
+
+
+## Kigoma
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Kigoma.png")
+```
+
+
+## Lindi
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Lindi.png")
+```
+
+
+## Mara
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Mara.png")
+```
+
+
+## Morogoro
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Morogoro.png")
+```
+
+
+## Mtwara
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Mtwara.png")
+```
+
+
+## Mwanza
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Mwanza.png")
+```
+
+
+## Pwani
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Pwani.png")
+```
+
+
+## Ruvuma
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Ruvuma.png")
+```
+
+
+## Shinyanga
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Shinyanga.png")
+```
+
+
+## Simiyu
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Simiyu.png")
+```
+
+
+## Tabora
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_Tabora.png")
+```
+
+# Zanzibar
+
+## Zanzibar
+
+- 2012 ZUCC is included, but graphs begin 2013
+- June 2014-July 2016 issuing data for ANC, EPI, Community is included
+- 2016 universal coverage campaign, 2020 mini-mass campaign and 2021 MRC are included
+- Community and Health Facility channel data from 2017-2021 (HMIS) is integrated
+
+
+
+## Mjini Magharibi
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_MjiniMagharibi.png")
+```
+
+
+## Kaskazini Unguja
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_KaskaziniUnguja.png")
+```
+
+
+## Kusini Unguja
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_KusiniUnguja.png")
+```
+
+
+## Kaskazini Pemba
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_KaskaziniPemba.png")
+```
+
+
+## Kusini Pemba
+
+```{r, out.width = "325px"} 
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/Annual/council_acc_2022_KusiniPemba.png")
+```
+
+
+# Methods 
+
+## 1. Methods - Net Decay
+
+- Annualized stock and flow model of ITNs issued across all channels and population was compiled, from NMCP ITN issuing data and NBS population projections
+- National-level modeling of net decay rates (Bertozzi-Villa, Nature Communications 2021) for Tanzania informed the selection of 2.15 year median lifespan
+- Net crop variable was created for each year, decaying the total number of nets issued in a given year by the decay rate (S-shaped curve, Chitnis et al) and then summed for a given year to provide the total 'crop'
+- Total annual crop was divided by the annual population to give nets per capita
+
+
+
+## 2. Methods - Nets per capita into ITN access
+
+- Data from 124 MIS/DHS/MICS surveys was used to plot regional (ADM1) level ITN access against ITNs per capita
+
+```{r, out.width = "250px"}
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/npc_access.png")
+```
+
+
+## 3. Methods - Nets per capita into ITN access - fit
+
+- A) Decay function for median lifespan of 2.15 years
+- B) Quantile Regression used to describe ITN access as a function of ITNs per capita and generate fit for the middle 50% of data in R
+
+```{r, out.width = "150px"}
+knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/decay_npc.png")
+```
+
+
+## 3. Methods - Nets per capita into ITN access - fit
+
+- Finely spaced grid of 99 points from 0.01 to 0.99 (values of nets-per-capita) generated from the quantile regression with their associated values and confidence bounds of ITN access
+- Grid merged into master dataset on the values of nets-per-capita, generating estimates of ITN access with confidence bounds for each value of nets-per-capita produced from the net crop 
