@@ -14,6 +14,7 @@ library(haven)
 library(janitor)
 library(ggthemes)
 library(cowplot)
+library(dplyr)
 theme_set(theme_light())
 pall <-  "Paired"
 ```
@@ -24,7 +25,10 @@ snp <- read_dta("snp_scatter.dta") %>%
   mutate(ucc3 = case_when(
     sinceucc<=2 ~ 0,
     sinceucc>2 ~ 1
-    ))
+    ),
+    label = as.factor(paste0("SNP ",snp)))
+
+## 578 SNP council-years
 ```
 
 Make two plots with all the data from the SNP councils (19 outliers dropped; boundary/name changes led to mismatch of population and ITNs that went in, sometimes TCs and DCs were combined in distribution records for example). Plot B drops councils for SNPs that occurred the year or second year after the mass campaign (i.e. Lake Zone got the 2015 MRC and then started a small SNP the next year, see bottom right corner of Plot A). Fit a line. 
@@ -42,10 +46,14 @@ allsnp <- snp %>%
   labs(color="SNP",
        title = "All SNP Councils (n=512)",
        x = "Predicted ITN access",
-       y = "Nets distributed as a percentage of the population (NPP)") +
+       y = "Nets issued as a percentage of the population (NPP)") +
   xlim(0,100) +
      scale_y_continuous(breaks=seq(0, 40, 10), limits=c(0, 40)) +
-scale_x_continuous(breaks=seq(0, 100, 20), limits=c(0, 100))
+scale_x_continuous(breaks=seq(0, 100, 20), limits=c(0, 100)) +
+   theme(plot.title = element_text(size = 9)) +
+   geom_curve(curvature=0.5, arrow = arrow(length = unit(0.03,"npc")), lineend = "round", x=75, xend=85, y=0.5, yend=3, color="dimgrey") +
+  annotate("text", x=45, y=0, label="Small SNP distributions following 2015 MRC", size=2)
+allsnp
 # +
 #   geom_smooth(data = snp, aes(x = accrk, y = percpop), se = FALSE, inherit.aes = FALSE, method = meth, color = "steelblue") 
 ggsave("snp_fit_scatter.png")
@@ -58,19 +66,20 @@ snp3 <- snp %>%
   scale_alpha(guide = "none") +
   scale_color_brewer(palette = pall) +
   labs(color="SNP",
-       title = "SNP Councils 3+ years post-campaign (n=416)",
+       title = "SNP Councils ≥3 years post-campaign (n=416)",
        x = "Predicted ITN access",
        y = "")  +
   xlim(0,100) +
    scale_y_continuous(breaks=seq(0, 40, 10), limits=c(0, 40)) +
  scale_x_continuous(breaks=seq(0, 100, 20), limits=c(0, 100)) +
   geom_smooth(data = subset(snp, ucc3==1 & outlier==0 & access_est>40), aes(x = access_est, y = percpop), se = FALSE, inherit.aes = FALSE, method = "loess", span=2, color = "steelblue") +
-  geom_smooth(data = subset(snp, ucc3==1 & outlier==0 & access_est>40), aes(x = access_est, y = percpop), se = FALSE, inherit.aes = FALSE, method = "glm", color = "red") +
-  theme(legend.position = "none")
+  # geom_smooth(data = subset(snp, ucc3==1 & outlier==0 & access_est>40), aes(x = access_est, y = percpop), se = FALSE, inherit.aes = FALSE, method = "glm", color = "red") +
+  theme(legend.position = "none",
+        plot.title = element_text(size = 9))
 ggsave("snp3_fit_scatter.png")
 
-plot_grid(allsnp, snp3, labels = "AUTO", axis="l", align="v")
-ggsave("snp_bifit_scatter.png")
+plot_grid(allsnp, snp3, labels = "AUTO", axis="l", align="hv")
+ggsave("snp_bifit_scatter.png", width=7, height=5, units="in")
 
 ```
 
@@ -86,11 +95,11 @@ allsnpsurv <- snp %>%
   scale_alpha(guide = "none") +
   scale_color_brewer(palette = pall) +
   labs(color="SNP",
-       title = "All SNP Councils (n=512)",
+       title = "All SNP Councils (n=456)",
        x = "Survey ITN access",
        y = "Nets distributed as a percentage of the population (NPP)") +
   xlim(0,100) +
-  scale_x_continuous(breaks=seq(0, 100, 20), limits=c(0, 100))
+  scale_x_continuous(breaks=seq(0, 100, 20), limits=c(0, 100)) 
 allsnpsurv
 ggsave("snp_fit_scatter_surv.png")
 
@@ -118,4 +127,204 @@ ggsave("snp_bifit_scatter_surv.png")
 ```
 
 
+```{r faceted}
+snpf <- snp %>% 
+  filter(ucc3==1 & outlier==0)
+
+facets <- snpf %>% 
+  ggplot(aes(x = access_est, y = percpop, color = as.factor(snp), alpha = 0.5)) +
+  geom_point(shape=20) +
+  scale_alpha(guide = "none") +
+  scale_color_brewer(palette = pall) +
+  labs(color="SNP",
+       # title = paste0("SNP Councils ≥3 years post-campaign (n=",nrow(snpf),")"),
+       x = "Predicted ITN access",
+       y = "Nets issued as a percentage of the population (NPP)")  +
+  xlim(0,100) +
+   scale_y_continuous(breaks=seq(0, 40, 10), limits=c(0, 40)) +
+ scale_x_continuous(breaks=seq(0, 100, 20), limits=c(0, 100)) +
+  geom_smooth(data = snpf, aes(x = access_est, y = percpop), se = FALSE, inherit.aes = FALSE, method = "glm", span=2, color = "steelblue") +
+   geom_hline(yintercept=15, alpha=0.4) +
+  geom_vline(xintercept=c(60,80), alpha=0.4) +
+  theme_few() +
+  theme(legend.position = "none",
+        # plot.title = element_text(size = 9),
+        axis.text=element_text(size=6)) +
+  facet_wrap(facets=~label, nrow=2)
+
+
+facets
+ggsave("snp_facets.png")
+```
+
+
+``` {r allinone}
+span <- 3
+lcolor <- "steelblue"
+alpha <- 0.02
+size=0.5
+
+multi <- snp %>% 
+  filter(ucc3==1 & outlier==0) %>% 
+  ggplot(aes(x = access_est, y = percpop, color = as.factor(snp), alpha = 0.5)) +
+  geom_point(shape=20) +
+  scale_alpha(guide = "none") +
+  scale_color_brewer(palette = pall) +
+  labs(color="SNP",
+       title = "SNP Councils ≥3 years post-campaign (n=416)",
+       x = "Predicted ITN access",
+       y = "")  +
+  xlim(0,100) +
+   scale_y_continuous(breaks=seq(0, 40, 10), limits=c(0, 40)) +
+ scale_x_continuous(breaks=seq(0, 100, 20), limits=c(0, 100)) +
+  # geom_smooth(data = subset(snp, ucc3==1 & outlier==0 & snp==1), aes(x = access_est, y = percpop), se = FALSE, inherit.aes = FALSE, method = "loess", span=span, color = lcolor, alpha=alpha, size=size) +
+  # geom_smooth(data = subset(snp, ucc3==1 & outlier==0 & snp==2), aes(x = access_est, y = percpop), se = FALSE, inherit.aes = FALSE, method = "loess", span=span, color = lcolor, alpha=alpha, size=size) +
+  # geom_smooth(data = subset(snp, ucc3==1 & outlier==0 & snp==3), aes(x = access_est, y = percpop), se = FALSE, inherit.aes = FALSE, method = "loess", span=span, color = lcolor, alpha=alpha, size=size) +
+  # geom_smooth(data = subset(snp, ucc3==1 & outlier==0 & snp==4), aes(x = access_est, y = percpop), se = FALSE, inherit.aes = FALSE, method = "loess", span=span, color = lcolor, alpha=alpha, size=size) +
+  # geom_smooth(data = subset(snp, ucc3==1 & outlier==0 & snp==5), aes(x = access_est, y = percpop), se = FALSE, inherit.aes = FALSE, method = "loess", span=span, color = lcolor, alpha=alpha, size=size) +
+  # geom_smooth(data = subset(snp, ucc3==1 & outlier==0 & snp==6), aes(x = access_est, y = percpop), se = FALSE, inherit.aes = FALSE, method = "loess", span=span, color = lcolor, alpha=alpha, size=size) +
+  # geom_smooth(data = subset(snp, ucc3==1 & outlier==0 & snp==7), aes(x = access_est, y = percpop), se = FALSE, inherit.aes = FALSE, method = "loess", span=span, color = lcolor, alpha=alpha, size=size) +
+  # geom_smooth(data = subset(snp, ucc3==1 & outlier==0 & snp==8), aes(x = access_est, y = percpop), se = FALSE, inherit.aes = FALSE, method = "loess", span=span, color = lcolor, alpha=alpha, size=size) +
+  geom_smooth(data = subset(snp, ucc3==1 & outlier==0 & snp==9), aes(x = access_est, y = percpop), se = FALSE, inherit.aes = FALSE, method = "loess", span=span, color = lcolor, alpha=alpha, size=size) +
+  # geom_smooth(data = subset(snp, ucc3==1 & outlier==0 & access_est>40), aes(x = access_est, y = percpop), se = FALSE, inherit.aes = FALSE, method = "glm", color = "red") +
+  theme(legend.position = "none",
+        plot.title = element_text(size = 9)) +
+  geom_hline(yintercept=15, alpha=0.4) +
+  geom_vline(xintercept=c(60,80), alpha=0.4)
+  # geom_segment(aes(x=0, y=15, yend=15, xend=60), color="dimgrey", alpha=0.2, size=0.1) +
+  # geom_segment(aes(x=60, y=0, xend=60, yend=15), color="dimgrey", alpha=0.2, size=0.1)
+```
+
+```{r}
+plot_grid(allsnp, multi, labels = "AUTO")
+ggsave("snp_multifit_scatter.png", width=7, height=5, units="in")
+```
+
+```{r}
+plot_grid(allsnp, facets, labels = "AUTO", rel_widths = c(1.5,2))
+ggsave("snp_facet_scatter.png", width=8, height=5, units="in")
+```
+
+```{r facetsurveys}
+facetsurv <- snp %>% 
+  filter(ucc3==1 & percpop<40) %>% 
+  ggplot(aes(xmin = access_survlb, xmax=access_survub, y = percpop, color = as.factor(snp), alpha = 0.5)) +
+  # geom_linerange() +
+  geom_point(aes(x=access_surv, y=percpop, color=as.factor(snp)), alpha=0.5) +
+  scale_alpha(guide = "none") +
+  scale_color_brewer(palette = pall) +
+  labs(color="SNP",
+       title = "SNP Councils 3+ years post-campaign",
+       x = "Survey ITN access",
+       y = "")  +
+  xlim(0,100) +
+  scale_x_continuous(breaks=seq(0, 100, 20), limits=c(0, 100)) +
+  geom_smooth(aes(x = access_surv, y = percpop), se = FALSE, inherit.aes = TRUE, method = "loess", color = "steelblue") +
+  geom_hline(yintercept=15, alpha=0.4) +
+  geom_vline(xintercept=c(60,80), alpha=0.4) +
+  theme_few() +
+  theme(legend.position = "none",
+        plot.title = element_text(size = 9),
+        axis.text=element_text(size=6)) +
+  facet_wrap(facets=~label, nrow=2)
+
+
+facetsurv
+ggsave("facet_surveys.png")
+
+```
+
+```{r violins}
+summary_df <- snpf %>% filter(percpop<79) %>% group_by(snp) %>% summarize(m=mean(percpop))
+
+boxes <- snpf %>% 
+  filter(percpop<79) %>% 
+  mutate(snpminus=snp-0.15,
+         snpplus=snp+0.15) %>% 
+ggplot() +
+  geom_boxplot(aes(snp, percpop, group=snp, color="black"), outlier.alpha=0.1) +
+  labs(x = "Round of SNP",
+       y = "Percent",
+       color="") +
+  scale_x_continuous(breaks=seq(0,10,1), limits=c(0,10)) +
+ geom_boxplot(aes(snpminus, access_est, group=snp, color="green"), width=.25, outlier.alpha=0.1) +
+  geom_boxplot(aes(snpplus, access_surv, group=snp, color="blue"), width=.25, outlier.alpha=0.1) +  
+  # geom_jitter(aes(snp, percpop, group=snp, color="black"), width=0.2, alpha=0.1) +
+  # geom_jitter(aes(snpminus, access_est, group=snp, color="green"), width=0.2, alpha=0.1) +
+  # geom_jitter(aes(snpplus, access_surv, group=snp, color="blue"), width=0.2, alpha=0.1) +
+  scale_color_hue(labels=c("NPP","Survey ITN access","Predicted ITN access")) +
+  theme(legend.position="bottom") +
+  # geom_hline(yintercept=15) +
+  geom_text(data=summary_df, aes(snp, m, label=round(m,1)), size=3, vjust=-2)
+
+boxes
+ggsave("boxes.png")
+plot_grid(facets, boxes, labels="AUTO")
+ggsave("facets_boxes_combo.png", width=8, height=5, units="in")
+
+```
+
+```{r}
+ggbetweenstats(data=snp, x=snp, y=percpop)
+```
+
+```{r violinboxes}
+vboxes <- snpf %>% 
+  filter(percpop<79) %>% 
+ggplot() +
+  geom_violin(aes(snp, percpop, group=snp, color="black")) +
+  labs(x = "Round of SNP",
+       y = "Percent",
+       color="") +
+  scale_x_continuous(breaks=seq(0,10,1), limits=c(0,10)) +
+ geom_violin(aes(snp, access_est, group=snp, color="green")) +
+  geom_violin(aes(snp, access_surv, group=snp, color="blue"), position = position_dodge(width=.75)) +
+  # geom_boxplot(aes(snp, percpop, group=snp, color="black"), notch=FALSE, varwidth=TRUE, alpha=0.2) +
+  geom_jitter(aes(snp, percpop, group=snp, color="black"), width=0.2, alpha=0.1) +
+  geom_jitter(aes(snp, access_est, group=snp, color="green"), width=0.2, alpha=0.1) +
+  geom_jitter(aes(snp, access_surv, group=snp, color="blue"), width=0.2, alpha=0.1) +
+  scale_color_hue(labels=c("NPP","Survey ITN access","Predicted ITN access")) +
+  theme(legend.position="bottom") +
+  # geom_hline(yintercept=15) +
+  geom_text(data=summary_df, aes(snp, m, label=round(m,1)), size=3, fontface="bold")
+
+vboxes
+
+plot_grid(facets, vboxes, labels="AUTO")
+ggsave("facets_vboxes_combo.png", width=8, height=5, units="in")
+```
+
+```{r ribbons}
+
+lb <- 0.25
+ub <- 0.75
+
+npp <- snp %>% 
+  group_by(snp) %>% 
+  summarize(npp=mean(percpop), npplb=quantile(percpop, lb, prob = lb), nppub=quantile(percpop, ub, prob=ub))
+
+
+pred <- snp %>% 
+  group_by(snp) %>% 
+  summarize(est=mean(access_est), estlb=quantile(access_est, lb, prob = lb), estub=quantile(access_est, ub, prob=ub))
+
+sur <- snp %>% 
+  group_by(snp) %>% 
+  summarize(sur=mean(access_surv), surlb=quantile(access_surv, lb, prob = lb), surub=quantile(access_surv, ub, prob=ub))
+
+collapse <- npp %>% 
+  left_join(pred, by="snp") %>% 
+  left_join(sur, by="snp")
+
+collapse %>% 
+  ggplot() +
+  geom_ribbon(aes(x=snp, ymin=npplb, ymax=nppub, fill="NPP"), alpha=0.2) +
+  geom_ribbon(aes(x=snp, ymin=estlb, ymax=estub, fill="Predicted Access"), alpha=0.2) +
+  geom_ribbon(aes(x=snp, ymin=surlb, ymax=surub, fill="Survey Access"), alpha=0.2) +
+  labs(fill="",
+       x="Round of SNP",
+       y="Percent") +
+    scale_x_continuous(breaks=seq(0,10,1), limits=c(0,10))
+
+```
 
