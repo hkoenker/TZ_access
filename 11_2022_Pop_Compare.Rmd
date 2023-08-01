@@ -1,0 +1,186 @@
+---
+title: "Comparison of 2012 projected and 2022 census populations in mainland Tanzania: Implications for ITN access estimates"
+author: "Hannah Koenker"
+date: "`r Sys.Date()`"
+output: 
+  bookdown::pdf_document2:
+    fig_caption: yes
+    number_sections: no
+    line_numbers: no
+    toc: no
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+
+library(tidyverse)
+library(haven)
+library(janitor)
+library(sf)
+library(ggrepel)
+library(readxl)
+library(stringr)
+library(patchwork)
+library(scales)
+library(khroma)
+library(english)
+library(knitr)
+```
+
+
+
+
+```{r}
+pop <- read_dta("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/output/test2022pops.dta") %>% 
+  clean_names() %>% 
+  pivot_longer(cols=c(pop, pop22e, pop22gi), names_to="type") %>% 
+  mutate(future=as.factor(if_else(year>2022, 1, 0)),
+         region=case_when(region=="Dar" ~ "Dar es Salaam",
+                          TRUE ~ as.character(region)))
+
+np <- read_dta("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/output/nmcp_pop_proj.dta") %>%
+  clean_names() %>% 
+  rename(council=district,
+         value=populationprojected) %>% 
+  mutate(council=case_when(council=="Ilala MC" ~ "Dar es Salaam CC",
+                           council=="Dodoma MC" ~ "Dodoma CC",
+                           council=="Kahama TC" ~ "Kahama MC",
+                           council=="Nyamagana MC" ~ "Mwanza CC",
+                           TRUE ~ as.character(council)),
+         type="nmcp",
+         future=as.factor(1),
+         region=str_remove_all(region, " Region"),
+         region=case_when(region=="Dar Es Salaam" ~ "Dar es Salaam",
+                          TRUE ~ as.character(region)))
+
+p <- pop %>% 
+  bind_rows(np) %>% 
+  mutate(type=factor(type, levels=c("pop", "pop22e", "pop22gi", "nmcp"), labels=c("pop", "pop22e", "pop22gi", "nmcp")))
+
+popwide <- read_dta("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/output/test2022pops.dta") %>% 
+  clean_names() 
+
+popwide22 <- popwide %>% 
+  filter(year==2022,
+        !region %in% c("KusiniUnguja","KusiniPemba", "MjiniMagharibi","KaskaziniUnguja","KaskaziniPemba")) %>% 
+  mutate(higher=if_else(pop2022census>pop, 1, 0))
+```
+
+# Comparing Population Estimates
+
+The Tanzania Annual Vector Control Report has relied on population projections from the 2012 Census. In 2022, a new census was conducted and 2022 population made available. Official projections from the 2022 census are still pending. 
+
+TVCA sought to compare the 2022 population with the projected 2022 population from the 2012 census. For `r popwide22 %>% tally(higher==0)` councils, 2022 census found that population had decreased compared to the 2012 projections, while in `r popwide22 %>% tally(higher==1)` councils the 2022 population was higher than 2012 projections.
+
+## Implications for 2022 ITN access estimates 
+
+```{r}
+b <- read_dta("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/output/pop_compare_access_2022census.dta") %>% 
+  clean_names() 
+
+b1 <- b %>% 
+  filter(below40==1)
+
+b2 <- b %>% 
+  filter(below40==2)
+```
+
+The difference in the projected 2022 population based on the 2012 census, and the 2022 census population, has implications for the calculation of ITN access. This is because ITN access estimate is calculated using nets-per-capita. TVCA compared the ITN access estimates for 2022 using both population sources (Fig. \@ref(fig:below40-chart)). Only `r b %>% tally(below40==2 | below40==1)` councils would have changed classification based on the 40% threshold for ITN access. `r combine_words(b1$council)` were under 40% from the 2012 NBS projection, but above 40% in the 2022 census, while `r combine_words(b2$council)` had been above 40% in the 2012 NBS projection, but were below 40% with the 2022 census population.
+
+```{r below40-chart, fig.cap="Estimated ITN access in 2022, comparing 2012 projected NBS population to 2022 census population. Labeled points show councils that would have changed classification for the 40% threshold due to differences in projected vs census population."}
+
+b %>% 
+  ggplot() +
+  geom_point(aes(x=access_est, y=accrk, color=as.factor(below40), shape=as.factor(outlier)), alpha=.5) +
+  geom_line(aes(x=access_est, y=access_est), alpha=.25) +
+  geom_text_repel(data=filter(b, below40==1 | below40==2), aes(x=access_est, y=accrk, color=as.factor(below40), label=council), alpha=.75, show.legend = FALSE) +
+  labs(x="ITN access from 2012 NBS projected population",
+       y="ITN access from 2022 NBS census population",
+       color="",
+       shape="") +
+  theme_minimal() +
+  scale_color_hue(labels=c(">40% ITN access", "below 40% in 2012 projection", "below 40% in 2022 census", "below 40% in both")) +
+  theme(legend.position="bottom", legend.box="vertical",) +
+  scale_shape(labels=c("council existed in 2012","outlier for population in 2012")) +
+  guides(color = guide_legend(reverse = TRUE, nrow=2,byrow=TRUE)) +
+  scale_y_continuous(breaks=c(0,20,40,60,80,100)) +
+  scale_x_continuous(breaks=c(0,20,40,60,80,100))
+
+```
+
+
+## Comparisons of 2012 NBS projections (post-2022) to NMCP and other projections
+
+While updated historical and future projections are pending, TVCA interpolated population between 2012 and 2022 census, comparing linear interpolation and geometric interpolation. Similarly, both methods were used to extrapolate population from 2022 forward through 2030, comparing with the 2012 projections. It should be noted that NBS projections use more sophisticated projection techniques that account for changes in birth rate, in- and out-migration, and deaths. 
+
+TVCA's simplified population estimates are compared to the 2012 census projections in the below graphs, which are grouped by region. Black points in the graphs show the 2012 and 2022 census populations. Population projects used by the NMCP for 2023-2027 are shown in red; these used a council-specific growth rate calculated from expected population growth from 2024 to 2025 in the original 2012 census projections, and predicts faster growth for some urban areas.
+
+Only mainland councils are presented. 
+
+```{r, eval=FALSE}
+p %>% 
+  filter(region=="Kagera") %>% 
+  ggplot() +
+  geom_line(aes(x=year, y=pop), color="black") +
+  geom_line(aes(x=year, y=pop22e), color="steelblue") +
+  geom_line(aes(x=year, y=pop22gi), color="maroon") +
+  facet_wrap(~council) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1, size=6)) +
+  scale_y_continuous(label=comma)
+```
+
+```{r, eval=FALSE}
+
+p %>% 
+  filter(region=="Kagera") %>% 
+  ggplot() +
+  geom_line(aes(x=year, y=value, color=type, linetype=future)) +
+  geom_point(data=filter(p, region=="Kagera" & (year==2012 | year==2022)), aes(x=year, y=value), alpha=.4) +
+  facet_wrap(~council) +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  labs(x="",
+       y="Population",
+       color="") +
+  # scale_colour_bright(labels=c("NBS 2012 projections","2022 linear interpolation", "2022 geometric interpolation", "NMCP 2022 projections")) +
+  scale_color_manual(values=c("black","#228833","#66ccee","#ee6677"), labels=c("NBS 2012 projections","2022 linear interpolation", "2022 geometric interpolation", "NMCP 2022 projections")) +
+  scale_y_continuous(label=comma) +
+  scale_linetype(guide="none") +
+  guides(color = guide_legend(nrow=2,byrow=TRUE))
+
+```
+
+```{r, warning=FALSE}
+## Drop Zanzibar from the plots and arrange by alpha order
+p <- p %>% 
+  arrange(region, council, year) %>% 
+  filter(!region %in% c("KusiniUnguja","KusiniPemba", "MjiniMagharibi","KaskaziniUnguja","KaskaziniPemba"))
+
+for ( c in unique(p$region) ) {
+  aa <- p %>% filter(region==c)
+
+  plot <- ggplot(aa) +
+    geom_line(aes(x = year, y = value, color = type, linetype=future)) +
+    geom_point(data=filter(aa, (year==2012 | year==2022)), aes(x=year, y=value), alpha=.4) +
+    facet_wrap( ~ council) +
+    theme_minimal() +
+    theme(legend.position = "bottom") +
+    scale_y_continuous(label = comma) +
+  scale_linetype(guide="none") +
+    scale_color_manual(values=c("black","#228833","#66ccee","#ee6677"), labels=c("NBS 2012 projections","2022 linear interpolation", "2022 geometric interpolation", "NMCP 2022 projections")) +
+    labs(
+      x = "",
+      y = "Population",
+      color = "",
+      title = as.character(c)
+    ) +
+      guides(color = guide_legend(nrow=2,byrow=TRUE))
+  
+  print(plot)
+}
+```
+
