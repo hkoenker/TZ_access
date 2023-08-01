@@ -13,6 +13,8 @@ header-includes:
   - \definecolor{thorange}{rgb}{.8627451, .34509804, .16470588}
   - \setbeamercolor{frametitle}{bg=thorange}
   - \setbeamercolor{progress bar in section page}{fg=thorange}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -303,7 +305,7 @@ knitr::include_graphics("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysi
 - 2012 ZUCC is included, but graphs begin 2013
 - June 2014-July 2016 issuing data for ANC, EPI, Community is included
 - 2016 universal coverage campaign, 2020 mini-mass campaign and 2021 MRC are included
-- Community and Health Facility channel data from 2017-2021 (HMIS) is integrated
+- Community and Health Facility channel data from 2017-2022 (HMIS) is integrated
 
 
 
