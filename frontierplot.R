@@ -38,7 +38,7 @@ ggplot() +
   # scale_linetype_manual(values = c("TRUE" = "solid", "FALSE" = "dotted")) + # scale_size(range = c(1, 2))
   scale_size(range = c(.5, 1.0)) +
   scale_shape_manual(values=c(19, 18, 17, 15)) +
-  theme_minimal() +
+  theme_classic() +
   scale_color_brewer(palette="Set2") +
   scale_alpha(range=c(0.4,1)) +
   # scale_colour_brewer(palette="Set2", labels = c("CD", "UCC+CD", "UCC3", "UCC5")) +
@@ -48,4 +48,4 @@ ggplot() +
        shape = "Distribution Strategy", colour = "Distribution Strategy") +
   guides(alpha="none", size = "none")
 
-ggsave("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/frontierplot_all", device = "png")
+ggsave("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/TVCA/Access Estimates/figs/frontierplot_all.png")
